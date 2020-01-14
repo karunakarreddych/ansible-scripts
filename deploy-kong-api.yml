@@ -1,0 +1,18 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: getting deployment file
+      shell: cd /tmp 
+
+    - name: docker login 
+      shell: docker login --username=chkarunakarreddy --password='Karan@123'
+
+    - name: creating kong namespace
+      shell: kubectl create namespace kong
+
+    - name: deploying kong api
+      shell: kubectl apply -f /root/tetrawing/sample/kong-api-gateway.yaml
+    
+    - name: waiting for db conections
+      wait_for:
+        timeout: 15

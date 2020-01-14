@@ -1,0 +1,63 @@
+- hosts: master
+  vars_files:
+  - env_variables
+  become: yes
+  gather_facts: false
+  tasks:
+          #    - name: Allow Network Ports in Firewalld
+          #      firewalld:
+          #       port: "{{ item }}"
+          #       state: enabled
+          #       permanent: yes
+          #       immediate: yes
+          #      with_items: "{{ ports }}"
+          #
+          #    - name: Enabling Bridge Firewall Rule
+          #      shell: "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+
+
+    - name: Disable firewall
+      shell: systemctl disable firewalld
+
+    - name: Stopping firewall
+      shell: systemctl stop firewalld
+
+    - name: get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+
+- hosts: workers
+  vars_files:
+  - env_variables
+  become: yes
+  tasks:
+          #    - name: Allow Network Ports in Firewalld
+          #      firewalld:
+          #       port: "{{ item }}"
+          #       state: enabled
+          #       permanent: yes
+          #       immediate: yes
+          #      with_items: "{{ ports }}"
+
+          #    - name: Enabling Bridge Firewall Rule
+          #      shell: "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
+
+    - name: Disable firewall
+      shell: systemctl disable firewalld
+
+    - name: Stopping firewall
+      shell: systemctl stop firewalld
+
+    - name: join cluster
+      shell: "{{ hostvars['master'].join_command }} --ignore-preflight-errors all  >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt
+    - name: adding worker nodes are in progress
+      wait_for:
+        timeout: 15

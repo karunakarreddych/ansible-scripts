@@ -1,0 +1,6 @@
+- hosts: all
+  gather_facts: False
+  become: yes
+  tasks:
+   - name: Bootstrap a host without python installed
+     raw: yum install -y python3
