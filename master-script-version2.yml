@@ -1,0 +1,9 @@
+---
+- import_playbook: prerequisites.yml
+- import_playbook: dependencies.yml
+- import_playbook: kube-master.yml
+- import_playbook: kube-nodes.yml
+- import_playbook: deploy-web-application.yml
+- import_playbook: deploy-postgres.yml
+- import_playbook: deploy-spring-boot.yml
+- import_playbook: deploy-kong-api.yml
